@@ -27,13 +27,13 @@ print("Resumen de .info():")
 df.info()
 print("-" * 50)
 
-print(f"\n> Estadísticas generales automáticas: \n{df.describe().round(2)}\n")
+print(f"\n> Estadísticas generales de las columnas numéricas: \n{df.describe().round(2)}\n")
 
 print("\n--- Respuestas a las preguntas de exploración ---")
 print(f"• Cantidad de variables (columnas): {len(df.columns)}")
 print(f"• Variables numéricas detectadas:\n{df.select_dtypes(include=['number']).dtypes}\n")
 print(f"• Cantidad de registros (filas): {df.shape[0]}")
-print(f"• Variables categóricas detectadas:\n{df.select_dtypes(include=['object']).dtypes}\n")
+print(f"• Variables categóricas detectadas:\n{df.select_dtypes(include=['str']).dtypes}\n")
 
 print("• ¿Qué información representa cada fila?")
 print("Cada fila representa una transacción de venta individual. Contiene el registro detallado de un producto vendido, incluyendo variables de tiempo, ubicación, datos del cliente, métricas financieras y el estado de la entrega.")
@@ -51,6 +51,8 @@ print(df[df.isnull().any(axis=1)])
 # Relleno de nulos para futuros cálculos
 df['Descuento_Porc'] = df['Descuento_Porc'].fillna(0) 
 df['Costo_Envio'] = df['Costo_Envio'].fillna(0)
+print(f"\nSe rellenaron nulos en las columnas 'Descuento_Porc' y 'Costo_Envio")
+print(f"\nCalificacion: Se conservan los NaN porque corresponden a ventas Canceladas o Pendientes.\nRellenar con 0 alteraría erróneamente el promedio de satisfacción de clientes.")
 
 print(f"\n> Cantidad de registros duplicados: {df.duplicated().sum()}")
 
@@ -80,7 +82,7 @@ df['Total_bruto'] = df['Cantidad'] * df['Precio_Unitario']
 df['Monto_Descuento'] = (df['Total_bruto'] * df['Descuento_Porc']).astype(int)
 df['Importe_venta'] = df['Total_bruto'] - df['Monto_Descuento'] + df['Costo_Envio']
 print("¡Columnas creadas con éxito! ('Total_bruto', 'Monto_Descuento', 'Importe_venta')")
-
+print(f"\nMostramos el dataframe con las columnas agregadas: \n{df.head()}")
 
 print('\n' + '='*72)
 print("--- 4. ANÁLISIS EXPLORATORIO GENERAL ---")
@@ -88,77 +90,129 @@ print('='*72)
 
 columnas_analisis = ['Cantidad', 'Precio_Unitario', 'Descuento_Porc', 'Costo_Envio', 'Calificacion', 'Importe_venta']
 
-for col in columnas_analisis:
-    print(f"\n--- Estadísticos detallados de la columna: '{col}' ---")
-    print(f"  Min: {df[col].min().round(2)} | Max: {df[col].max().round(2)}")
-    print(f"  Promedio: {df[col].mean().round(2)} | Mediana: {df[col].median().round(2)}")
-    print(f"  Desviación Estándar: {df[col].std().round(2)}")
-    print(f"  Resumen describe:\n{df[col].describe().round(2)}")
+resumen_estadistico = df[columnas_analisis].describe().round(2)
+print("--- Estadísticas Descriptivas Generales ---")
+print(f'\n{resumen_estadistico}')
+
+# --- SUBIMOS EL FILTRO AL INICIO DE LA SECCIÓN 4 ---
+df_entregado = df[df['Estado_Venta'] == 'Entregada']
+
+print("\n--- Métricas Clave Globales ---")
+
+# Consideramos todas las operaciones
+print(f"Total de operaciones registradas: {len(df)}") 
+# Desde acá solo se consideran las operaciones que figuran como entregadas
+print(f"Total de unidades vendidas:       {df_entregado['Cantidad'].sum()} unidades")
+print(f"Facturación bruta:                ${df_entregado['Total_bruto'].sum():,.2f}")
+print(f"Total otorgado en descuentos:     ${df_entregado['Monto_Descuento'].sum():,.2f}")
+print(f"Total recaudado por envíos:       ${df_entregado['Costo_Envio'].sum():,.2f}")
+print(f"Facturación neta total:           ${df_entregado['Importe_venta'].sum():,.2f}")
+print(f"Ticket promedio por venta:        ${df_entregado['Importe_venta'].mean():,.2f}")
+print(f"Calificación promedio general:    {df_entregado['Calificacion'].mean():.2f} / 5.0")
+
+
+
+"""
+Volumen de datos (count): El análisis se basa en 36 operaciones comerciales registradas. 
+
+Volumen de compra por operación (Cantidad): Los clientes compran en promedio 1.31 productos por transacción. Lo más habitual es que compren 1 solo artículo (así lo indican el mínimo, el percentil 25%, 50% y 75%), siendo 4 la cantidad máxima registrada en una sola operación.
+
+Precios de los productos (Precio_Unitario): Existe una altísima dispersión de precios (desviación estándar de ~$357,414.94). El producto más barato cuesta $52,000.00 y el más costoso alcanza los $1,450,000.00. La mitad de los productos vendidos se sitúan por debajo de los $457,500.00.
+
+Estrategia de descuentos (Descuento_Porc): El descuento promedio aplicado es del 7% (0.07). El 75% de las transacciones reciben un descuento igual o inferior al 10%, alcanzando un beneficio máximo puntual del 20%. Cabe destacar que hay operaciones que no registraron ningún descuento (mínimo de 0%).
+
+Logística (Costo_Envio): El costo de envío promedio por pedido es de $10,833.33. Hay transacciones donde el envío fue gratuito ($0.00, presente hasta el percentil 25%), mientras que el costo logístico más elevado fue de $38,000.00.
+
+Satisfacción del cliente (Calificacion): La experiencia es mayoritariamente muy positiva, con una calificación media de 4.29 sobre 5. El 50% de los clientes calificó la compra con una nota perfecta de 5.00, y la puntuación más baja registrada fue de 3.00.
+
+Facturación por venta (Importe_Venta): El ticket promedio de facturación se ubica en $482,201.39 por operación. La transacción de menor valor fue de $137,750.00, mientras que la venta más grande del período generó un ingreso de $1,275,600.00.
+"""
 
 
 print('\n' + '='*72)
 print("--- 5. ANÁLISIS POR SUCURSAL ---")
 print('='*72)
 
-print("\n• Cantidad de operaciones por sucursal:")
-print(df.groupby('Sucursal')['ID_Venta'].count())
+resumen_sucursal = df_entregado.groupby('Sucursal').agg(
+    Cant_Operaciones=('ID_Venta', 'count'),
+    Facturacion_Total=('Importe_venta', 'sum'),  # <-- Cambiado aquí
+    Ticket_Promedio=('Importe_venta', 'mean')    # <-- Cambiado aquí
+).sort_values(by='Facturacion_Total', ascending=False)
 
-print("\n• Facturación total por sucursal:")
-print(df.groupby('Sucursal')['Importe_venta'].sum().round(2))
+print("--- Resumen de Desempeño por Sucursal ---")
+resumen_sucursal_formato = resumen_sucursal.copy()
 
-print("\n• Unidades vendidas por categoría en cada sucursal:")
-print(df.groupby(['Sucursal', 'Categoria'])['Cantidad'].sum())
+# Si usas el formato regional (punto para miles, coma para decimales):
+def formatear_pesos(val):
+    return f"${val:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
-print("\n• Importe promedio de las ventas por sucursal:")
-print(df.groupby('Sucursal')['Importe_venta'].mean().round(2))
+resumen_sucursal_formato['Facturacion_Total'] = resumen_sucursal_formato['Facturacion_Total'].apply(formatear_pesos)
+resumen_sucursal_formato['Ticket_Promedio'] = resumen_sucursal_formato['Ticket_Promedio'].apply(formatear_pesos)
 
+print(f"Resumen de desempeño por sucursal:\n{resumen_sucursal_formato}")
+
+categorias_sucursal = df_entregado.groupby(['Sucursal', 'Categoria'])['Cantidad'].sum().reset_index()
+# Ordenamos para que quede primero la sucursal y luego la categoría con más ventas
+categorias_sucursal = categorias_sucursal.sort_values(by=['Sucursal', 'Cantidad'], ascending=[True, False])
+
+print("\n--- Categorías con más unidades vendidas por Sucursal ---")
+print(categorias_sucursal)
+
+'''El negocio está liderado por la sucursal Centro, mientras que las demás muestran un comportamiento competitivo pero con tickets de menor valor.
+
+Centro (El líder indiscutido): Es la sucursal que más operaciones registra (10) y la que genera el mayor volumen de ingresos con $6.563.250,00. Su éxito se debe a que tiene el Ticket Promedio más alto de toda la cadena ($656.325,00), lo que indica que vende productos de mayor valor unitario o más artículos por combo.
+
+Sur (Segundo en facturación): Registra 9 operaciones y recauda $3.984.050,00. Aunque vende casi la misma cantidad de veces que el Centro, su ticket promedio es notablemente menor ($442.672,22).
+
+Oeste (Menor volumen, buen ticket): Con solo 8 operaciones (la menor cantidad de la red), logra posicionarse en tercer lugar facturando $3.742.500,00 gracias a un sólido ticket promedio de $467.812,50 (el segundo más alto del negocio).
+
+Norte (Mucha actividad, baja rentabilidad): Empata en cantidad de transacciones con la sucursal Sur (9 operaciones), pero queda última en facturación ($3.069.450,00) debido a que su ticket promedio es el más bajo de todos ($341.050,00).'''
 
 print('\n' + '='*72)
 print("--- 6. COMPARATIVA: CANAL ONLINE VS PRESENCIAL ---")
 print('='*72)
 
-print("\n• Unidades totales vendidas por Canal:")
-print(df.groupby('Canal')['Cantidad'].sum())
+comparativa_canal = df_entregado.groupby('Canal').agg(
+    Operaciones=('ID_Venta', 'count'),
+    Unidades_Totales=('Cantidad', 'sum'),
+    Facturacion_Total=('Importe_venta', 'sum'),
+    Ticket_Promedio=('Importe_venta', 'mean'),   
+    Descuento_Promedio=('Descuento_Porc', 'mean'),
+    Costo_Envio_Promedio=('Costo_Envio', 'mean')
+)
 
-print("\n• Importe promedio por transacción según el Canal:")
-print(df.groupby('Canal')['Importe_venta'].mean().round(2))
+print("\n--- Comparativa Global: Online vs Presencial ---")
 
-print("\n• Facturación total por Canal (Solo Ventas Entregadas):")
-facturacion_canales_entregados = df[df['Estado_Venta'] == 'Entregada'].groupby('Canal')['Importe_venta'].sum().round(2)
-print(facturacion_canales_entregados)
+comparativa_canal_formato = comparativa_canal.copy()
+comparativa_canal_formato['Facturacion_Total'] = comparativa_canal_formato['Facturacion_Total'].map('${:,.2f}'.format)
+comparativa_canal_formato['Ticket_Promedio'] = comparativa_canal_formato['Ticket_Promedio'].map('${:,.2f}'.format)
+comparativa_canal_formato['Descuento_Promedio'] = (comparativa_canal_formato['Descuento_Promedio'] * 100).map('{:.2f}%'.format)
+comparativa_canal_formato['Costo_Envio_Promedio'] = comparativa_canal_formato['Costo_Envio_Promedio'].map('${:,.2f}'.format)
 
-print("\n• Distribución de tasas de descuento aplicadas por Canal:")
-print(df.groupby('Canal')['Descuento_Porc'].value_counts())
-
-print("\n• Distribución de costos de envío cobrados por Canal:")
-print(df.groupby('Canal')['Costo_Envio'].value_counts())
-
-print("\n• Tipos de clientes frecuentes por Canal:")
-print(df.groupby('Canal')['Tipo_Cliente'].value_counts())
-
-print("\n• Categorías más vendidas según el Canal:")
-print(df.groupby('Canal')['Categoria'].value_counts())
+print(f"\n{comparativa_canal_formato}\n") 
 
 print(f'\nEscribir una breve interpretación de las diferencias observadas.\n')
 
-print("Interpretación del análisis por Canal:El canal Online se consolida como el principal motor de la empresa, liderando tanto en volumen de operaciones (20 frente a 16 del Presencial) como en rentabilidad por ticket, alcanzando un importe promedio de $571.815,00 (considerablemente superior a los $370.184,00 del canal físico). Este mayor rendimiento digital se ve impulsado por la integración de costos de envío y una política de descuentos más agresiva y variada, que actúa como un claro incentivo para el consumidor. En cuanto al perfil del comprador, el cliente particular mantiene el liderazgo absoluto en ambas modalidades. Por último, la categoría de Pequeños Electrodomésticos se posiciona como el producto estrella del negocio, registrando la mayor frecuencia de transacciones tanto en el entorno virtual como en las tiendas presenciales.")
+print("Interpretación del análisis por Canal:\nEl canal Online se consolida como el principal motor de la empresa, liderando tanto en volumen de operaciones (20 frente a 16 del Presencial) como en rentabilidad por ticket, alcanzando un importe promedio de $571.815,00 (considerablemente superior a los $370.184,00 del canal físico). Este mayor rendimiento digital se ve impulsado por la integración de costos de envío y una política de descuentos más agresiva y variada, que actúa como un claro incentivo para el consumidor. En cuanto al perfil del comprador, el cliente particular mantiene el liderazgo absoluto en ambas modalidades. Por último, la categoría de Pequeños Electrodomésticos se posiciona como el producto estrella del negocio, registrando la mayor frecuencia de transacciones tanto en el entorno virtual como en las tiendas presenciales.")
 
 print('\n' + '='*72)
 print("--- 7. ANÁLISIS DE DESEMPEÑO POR VENDEDOR ---")
 print('='*72)
 
-print("\n• Ranking: Cantidad de operaciones por Vendedor:")
-print(df.groupby('Vendedor')['ID_Venta'].count().sort_values(ascending=False))
+resumen_vendedores = df_entregado.groupby('Vendedor').agg(
+    Operaciones=('ID_Venta', 'count'),
+    Unidades_Vendidas=('Cantidad', 'sum'),
+    Facturacion_Total=('Importe_venta', 'sum'),
+    Ticket_Promedio=('Importe_venta', 'mean'),
+    Calificacion_Promedio=('Calificacion', 'mean')
+).sort_values(by='Facturacion_Total', ascending=False)
 
-print("\n• Ranking: Unidades físicas vendidas por Vendedor:")
-print(df.groupby('Vendedor')['Cantidad'].sum().sort_values(ascending=False))
+resumen_vendedores_formato = resumen_vendedores.copy()
+resumen_vendedores_formato['Facturacion_Total'] = resumen_vendedores_formato['Facturacion_Total'].map('${:,.2f}'.format)
+resumen_vendedores_formato['Ticket_Promedio'] = resumen_vendedores_formato['Ticket_Promedio'].map('${:,.2f}'.format)
 
-print("\n• Ranking: Facturación total (Solo Ventas Entregadas) por Vendedor:")
-facturacion_vendedor_entregados = df[df['Estado_Venta'] == 'Entregada'].groupby('Vendedor')['Importe_venta'].sum().round(2).sort_values(ascending=False)
-print(facturacion_vendedor_entregados)
-
-print("\n• Ranking: Calificación promedio de clientes por Vendedor:")
-print(df.groupby('Vendedor')['Calificacion'].mean().sort_values(ascending=False))
+print("--- Desempeño General de Vendedores ---")
+print(f"\n{resumen_vendedores_formato.round(2)}\n")
 
 print("\nInterpretación del desempeño por Vendedor:\n" \
 "El ranking de volumen de operaciones está liderado por Diego Fernández, Lucía Gómez, Nicolás Díaz y Martín López. Al analizar en detalle los comportamientos, se observan perfiles comerciales muy marcados:\nDiego Fernández se posiciona como el vendedor más eficiente y valioso para el negocio: lidera la facturación total y posee una de las mejores calificaciones promedio, lo que demuestra un excelente equilibrio entre rentabilidad y satisfacción al cliente.\nNicolás Díaz representa el perfil de volumen o 'mayorista': aunque no lidera en facturación, es el vendedor que logró colocar la mayor cantidad de unidades físicas de productos en el mercado.Esta diferencia nos permite concluir que mientras Diego Fernández se enfoca en transacciones de mayor valor unitario (tickets más altos), Nicolás Díaz tracciona el movimiento de stock mediante ventas masivas de menor valor.")
@@ -168,28 +222,24 @@ print('\n' + '='*72)
 print("--- 8. ANÁLISIS DE PRODUCTOS Y CATEGORÍAS ---")
 print('='*72)
 
-print("\n• Categorías con mayor cantidad de unidades vendidas:")
-print(df.groupby('Categoria')['Cantidad'].sum().sort_values(ascending=False))
+resumen_categorias = df_entregado.groupby('Categoria').agg(
+    Operaciones=('ID_Venta', 'count'),
+    Unidades_Vendidas=('Cantidad', 'sum'),
+    Facturacion_Total=('Importe_venta', 'sum'),
+    Precio_Unitario_Promedio=('Precio_Unitario', 'mean')
+).sort_values(by='Facturacion_Total', ascending=False)
 
-print("\n• Categorías que generaron mayor facturación:")
-print(df.groupby('Categoria')['Importe_venta'].sum().sort_values(ascending=False))
+resumen_categorias_formato = resumen_categorias.copy()
+resumen_categorias_formato['Facturacion_Total'] = resumen_categorias_formato['Facturacion_Total'].map('${:,.2f}'.format)
+resumen_categorias_formato['Precio_Unitario_Promedio'] = resumen_categorias_formato['Precio_Unitario_Promedio'].map('${:,.2f}'.format)
 
-print("\n• Productos con mayor volumen de unidades vendidas:")
-print(df.groupby('Producto')['Cantidad'].sum().sort_values(ascending=False))
-
-print("\n• Marcas con mayor presencia (cantidad de transacciones):")
-print(df.groupby('Marca')['ID_Venta'].count().sort_values(ascending=False))
-
-print("\n• Comparativa de Precios Unitarios por Categoría (Mín, Prom, Máx):")
-precios_por_categoria = df.groupby('Categoria')['Precio_Unitario'].agg(['min', 'mean', 'max']).round(2)
-precios_por_categoria.columns = ['Precio Mínimo', 'Precio Promedio', 'Precio Máximo']
-print(precios_por_categoria.sort_values(by='Precio Promedio', ascending=False))
+print("--- Rendimiento por Categoría (Unidades, Facturación y Precio Promedio) ---")
+print(resumen_categorias_formato.round(2))
 
 
 print('\n' + '='*72)
 print("--- 9. VISUALIZACIÓN DE DATOS ---")
 print('='*72)
-
 
 'Gráfico 1: El rendimiento de las Sucursales'
 'Tipo de gráfico:'
@@ -197,33 +247,27 @@ print('='*72)
 '¿Qué intenta mostrar? '
 'El mapa geográfico del negocio. Muestra que la sucursal Centro es el motor de liquidez y captación de caja de la empresa, mientras que las demás sucursales se mantienen estables en cantidad de operaciones pero con menor recaudación.'
 
-# 1. Activamos el fondo oscuro
+# Activamos el fondo oscuro
 plt.style.use('dark_background')
 
-# 2. Calcular los totales
-resumen = df.groupby("Sucursal")[["Cantidad", "Importe_venta"]].sum()
-sucursales = resumen.index
+# Calculamos los totales solo para lo efectivamente entregado
+resumen_suc = df_entregado.groupby("Sucursal")[["Cantidad", "Importe_venta"]].sum()
+sucursales = resumen_suc.index
 
-# 3. Crear una ventana con DOS gráficos separados (uno izquierda y otro derecha)
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 8))
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5))
 
-# --- GRÁFICO 1: CANTIDAD (Izquierda) ---
-ax1.bar(sucursales, resumen["Cantidad"], color="orange")
-ax1.set_title("Cantidad total vendida por Sucursal")
+# --- GRÁFICO 1A: CANTIDAD ---
+ax1.bar(sucursales, resumen_suc["Cantidad"], color="orange")
+ax1.set_title("Cantidad total vendida por Sucursal\n(Solo Entregadas)")
 ax1.set_ylabel("Unidades")
 
-# --- GRÁFICO 2: FACTURACIÓN (Derecha) ---
-ax2.bar(sucursales, resumen["Importe_venta"], color="blue")
-ax2.set_title("Facturación total por Sucursal")
+# --- GRÁFICO 1B: FACTURACIÓN ---
+ax2.bar(sucursales, resumen_suc["Importe_venta"], color="blue")
+ax2.set_title("Facturación total por Sucursal\n(Solo Entregadas)")
 ax2.set_ylabel("Monto ($)")
-
-# Formateamos los millones del gráfico de abajo con puntos separadores de miles
 ax2.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, loc: f"{int(x):,}".replace(",", ".")))
 
-# Ajustamos el diseño para que no se encimen los títulos
 plt.tight_layout()
-
-# Mostrar los gráficos
 plt.show()
 
 
@@ -233,33 +277,28 @@ plt.show()
 'El comportamiento de los empleados.'
 'Diego Fernández lidera la recaudación, mientras que Nicolás Díaz es un perfil de volumen que mueve muchas unidades físicas pero de menor valor.'
 
-# 1. Activamos el fondo oscuro
+# Activamos el fondo oscuro
 plt.style.use('dark_background')
 
-# 2. Calcular los totales
-resumen_vendedor = df.groupby("Vendedor")[["Cantidad", "Importe_venta"]].sum()
-vendedores = resumen_vendedor.index
+resumen_vend = df_entregado.groupby("Vendedor")[["Cantidad", "Importe_venta"]].sum()
+vendedores = resumen_vend.index
 
-# 3. Crear una ventana con DOS gráficos separados (uno arriba y otro abajo)
-# subplots(2, 1) crea 2 filas y 1 columna de gráficos
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 8))
 
-# --- GRÁFICO 1: CANTIDAD (Arriba) ---
-ax1.bar(vendedores, resumen_vendedor["Cantidad"], color="orange")
-ax1.set_title("Cantidad total vendida por Vendedor")
+# --- GRÁFICO 2A: CANTIDAD ---
+ax1.bar(vendedores, resumen_vend["Cantidad"], color="orange")
+ax1.set_title("Cantidad total vendida por Vendedor (Solo Entregadas)")
 ax1.set_ylabel("Unidades")
-ax1.tick_params(axis='x', rotation=45)
+ax1.tick_params(axis='x', rotation=30)
 
-# --- GRÁFICO 2: FACTURACIÓN (Abajo) ---
-ax2.bar(vendedores, resumen_vendedor["Importe_venta"], color="blue")
-ax2.set_title("Facturación total por Vendedor")
+# --- GRÁFICO 2B: FACTURACIÓN ---
+ax2.bar(vendedores, resumen_vend["Importe_venta"], color="blue")
+ax2.set_title("Facturación total por Vendedor (Solo Entregadas)")
 ax2.set_ylabel("Monto ($)")
-ax2.tick_params(axis='x', rotation=45)
+ax2.tick_params(axis='x', rotation=30)
+ax2.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, loc: f"{int(x):,}".replace(",", ".")))
 
-# Ajustamos el diseño para que no se encimen los títulos
 plt.tight_layout()
-
-# Mostrar los gráficos
 plt.show()
 
 
@@ -269,38 +308,35 @@ plt.show()
 'Intentamos mostrar cómo la flexibilidad en los descuentos define el éxito de cada canal: '
 'el canal presencial es conservador y se estanca en el 10% de descuento, mientras que el canal online rompe ese techo, genera un 50% de sus ventas con descuentos de doble dígito (entre 10% y 20%) y amplía significativamente su volumen comercial."'
 
-# 1. Activamos el fondo oscuro
+# Activamos el fondo oscuro
 plt.style.use('dark_background')
+
 plt.figure(figsize=(8, 6))
 
-# 2. Dibujamos las cajas de fondo (Muestran el promedio y los rangos generales)
 sns.boxplot(
-    data=df,
+    data=df, # Mantiene df general si deseas ver la política comercial histórica de descuentos
     x='Canal',
     y='Descuento_Porc',
     palette='muted',
-    boxprops=dict(alpha=0.3)  # Hace la caja semi-transparente para que no tape los puntos
+    boxprops=dict(alpha=0.3)
 )
 
-# 3. Dibujamos los puntos individuales de cada venta (¡El Stripplot!)
 sns.stripplot(
     data=df,
     x='Canal',
     y='Descuento_Porc',
     palette='cool',
-    size=8,          # Hacemos los puntos grandecitos para que se vean bien
-    jitter=0.2,      # Separa los puntos un poquito hacia los costados para que no se encimen
-    linewidth=1,     # Borde blanco fino a cada punto para que resalte
+    size=8,          
+    jitter=0.2,      
+    linewidth=1,     
     edgecolor='white'
 )
 
-# 4. Títulos y etiquetas claras para la entrega
 plt.title('Relación de Descuentos Aplicados según el Canal de Venta', fontsize=13, fontweight='bold', pad=15)
 plt.xlabel('Canal de Venta', fontsize=11)
 plt.ylabel('Porcentaje de Descuento (%)', fontsize=11)
 
-# 5. Formateamos el eje Y para que muestre el signo de porcentaje de forma prolija
-plt.gca().yaxis.set_major_formatter(plt.FuncFormatter(lambda x, loc: f"{int(x*100)}%"))
+plt.gca().yaxis.set_major_formatter(plt.FuncFormatter(lambda x, loc: f"{int(x)}%"))
 
 plt.tight_layout()
 plt.show()
@@ -315,29 +351,29 @@ plt.show()
 plt.style.use('dark_background')
 plt.figure(figsize=(10, 6))
 
-# Llevamos el Precio al eje Y para ver la dispersión real del dinero
 sns.stripplot(
-    data=df,
+    data=df_entregado, # Enfocado en productos entregados reales
     x='Categoria',
-    y='Precio_Unitario',          # <--- El precio ahora determina la altura del punto
-    hue='Cantidad',       # <--- El color te dice cuántas unidades se llevaron
-    palette='spring',     # Una paleta eléctrica (rosa/amarillo) que resalta perfecto en negro
+    y='Precio_Unitario',          
+    hue='Cantidad',       
+    palette='spring',     
     size=8,          
-    jitter=0.25,          # Aumentamos el jitter para que se dispersen más de lado y no se tapen
+    jitter=0.25,          
     alpha=0.8
 )
 
-plt.title('Dispersión de Precios de Venta por Categoría', fontsize=12, fontweight='bold')
+plt.title('Dispersión de Precios de Venta por Categoría (Solo Entregadas)', fontsize=12, fontweight='bold')
 plt.xlabel('Categoría')
 plt.ylabel('Precio Unitario ($)')
+plt.gca().yaxis.set_major_formatter(plt.FuncFormatter(lambda x, loc: f"${int(x):,}".replace(",", ".")))
 plt.xticks(rotation=15)
 plt.legend(title='Unidades por Venta', bbox_to_anchor=(1.05, 1), loc='upper left')
 plt.tight_layout()
 plt.show()
 
+'Guardamos el dataframe en un archivo csv'
 
 try:
-    # Intentamos guardar el archivo de forma normal
     df.to_csv(
         "Preparado_Ventas_Electrodomésticos.csv",
         index=False,
