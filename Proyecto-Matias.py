@@ -12,8 +12,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# Carga del DataFrame
-df = pd.read_excel('C:/Users/matia/Documentos/Documents/Resumen paralelo 4 (Autosaved)/02 - Cursos/Cilsa - PYTHON/Clase 9/ventas_electrodomesticos_integrador.xlsx')
+# Detecta automáticamente la carpeta actual donde está este archivo .py
+carpeta_actual = os.path.dirname(__file__) if '__file__' in locals() else os.getcwd()
+ruta_excel = os.path.join(carpeta_actual, 'ventas_electrodomesticos_integrador.xlsx')
+
+# Carga del DataFrame garantizada en cualquier entorno
+df = pd.read_excel(ruta_excel)
 
 # Exploración inicial
 print(f"\n> Primeras filas: \n{df.head()}\n")
@@ -84,6 +88,7 @@ df['Importe_venta'] = df['Total_bruto'] - df['Monto_Descuento'] + df['Costo_Envi
 print("¡Columnas creadas con éxito! ('Total_bruto', 'Monto_Descuento', 'Importe_venta')")
 print(f"\nMostramos el dataframe con las columnas agregadas: \n{df.head()}")
 
+
 print('\n' + '='*72)
 print("--- 4. ANÁLISIS EXPLORATORIO GENERAL ---")
 print('='*72)
@@ -94,23 +99,31 @@ resumen_estadistico = df[columnas_analisis].describe().round(2)
 print("--- Estadísticas Descriptivas Generales ---")
 print(f'\n{resumen_estadistico}')
 
-# --- SUBIMOS EL FILTRO AL INICIO DE LA SECCIÓN 4 ---
+# Filtro para trabajar solo con las ventas que fueron entregadas
 df_entregado = df[df['Estado_Venta'] == 'Entregada']
 
 print("\n--- Métricas Clave Globales ---")
 
+def formato_moneda(val):
+    """Formatea un número al estilo regional: $1.234.567,89"""
+    if pd.isna(val): 
+        return ""
+    # Formato inicial USA: 1,234,567.89
+    res = f"${val:,.2f}"
+    # Intercambio de coma por punto y punto por coma
+    return res.replace(",", "X").replace(".", ",").replace("X", ".")
+
 # Consideramos todas las operaciones
 print(f"Total de operaciones registradas: {len(df)}") 
-# Desde acá solo se consideran las operaciones que figuran como entregadas
+# Solo se consideran las operaciones que figuran como entregadas
 print(f"Total de unidades vendidas:       {df_entregado['Cantidad'].sum()} unidades")
-print(f"Facturación bruta:                ${df_entregado['Total_bruto'].sum():,.2f}")
-print(f"Total otorgado en descuentos:     ${df_entregado['Monto_Descuento'].sum():,.2f}")
-print(f"Total recaudado por envíos:       ${df_entregado['Costo_Envio'].sum():,.2f}")
-print(f"Facturación neta total:           ${df_entregado['Importe_venta'].sum():,.2f}")
-print(f"Ticket promedio por venta:        ${df_entregado['Importe_venta'].mean():,.2f}")
-print(f"Calificación promedio general:    {df_entregado['Calificacion'].mean():.2f} / 5.0")
-
-
+print(f"Facturación bruta:                {formato_moneda(df_entregado['Total_bruto'].sum())}")
+print(f"Total otorgado en descuentos:     {formato_moneda(df_entregado['Monto_Descuento'].sum())}")
+print(f"Total recaudado por envíos:       {formato_moneda(df_entregado['Costo_Envio'].sum())}")
+print(f"Facturación neta total:           {formato_moneda(df_entregado['Importe_venta'].sum())}")
+print(f"Ticket promedio por venta:        {formato_moneda(df_entregado['Importe_venta'].mean())}")
+calif_promedio = f"{df_entregado['Calificacion'].mean():.2f}".replace('.', ',')
+print(f"Calificación promedio general:    {calif_promedio} / 5.0")
 
 """
 Volumen de datos (count): El análisis se basa en 36 operaciones comerciales registradas. 
@@ -140,21 +153,15 @@ resumen_sucursal = df_entregado.groupby('Sucursal').agg(
 ).sort_values(by='Facturacion_Total', ascending=False)
 
 print("--- Resumen de Desempeño por Sucursal ---")
+
 resumen_sucursal_formato = resumen_sucursal.copy()
-
-# Si usas el formato regional (punto para miles, coma para decimales):
-def formatear_pesos(val):
-    return f"${val:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-
-resumen_sucursal_formato['Facturacion_Total'] = resumen_sucursal_formato['Facturacion_Total'].apply(formatear_pesos)
-resumen_sucursal_formato['Ticket_Promedio'] = resumen_sucursal_formato['Ticket_Promedio'].apply(formatear_pesos)
-
-print(f"Resumen de desempeño por sucursal:\n{resumen_sucursal_formato}")
+resumen_sucursal_formato['Facturacion_Total'] = resumen_sucursal_formato['Facturacion_Total'].apply(formato_moneda)
+resumen_sucursal_formato['Ticket_Promedio'] = resumen_sucursal_formato['Ticket_Promedio'].apply(formato_moneda)
+print(f"\n{resumen_sucursal_formato}")
 
 categorias_sucursal = df_entregado.groupby(['Sucursal', 'Categoria'])['Cantidad'].sum().reset_index()
 # Ordenamos para que quede primero la sucursal y luego la categoría con más ventas
 categorias_sucursal = categorias_sucursal.sort_values(by=['Sucursal', 'Cantidad'], ascending=[True, False])
-
 print("\n--- Categorías con más unidades vendidas por Sucursal ---")
 print(categorias_sucursal)
 
@@ -184,10 +191,10 @@ comparativa_canal = df_entregado.groupby('Canal').agg(
 print("\n--- Comparativa Global: Online vs Presencial ---")
 
 comparativa_canal_formato = comparativa_canal.copy()
-comparativa_canal_formato['Facturacion_Total'] = comparativa_canal_formato['Facturacion_Total'].map('${:,.2f}'.format)
-comparativa_canal_formato['Ticket_Promedio'] = comparativa_canal_formato['Ticket_Promedio'].map('${:,.2f}'.format)
+comparativa_canal_formato['Facturacion_Total'] = comparativa_canal_formato['Facturacion_Total'].apply(formato_moneda)
+comparativa_canal_formato['Ticket_Promedio'] = comparativa_canal_formato['Ticket_Promedio'].apply(formato_moneda)
 comparativa_canal_formato['Descuento_Promedio'] = (comparativa_canal_formato['Descuento_Promedio'] * 100).map('{:.2f}%'.format)
-comparativa_canal_formato['Costo_Envio_Promedio'] = comparativa_canal_formato['Costo_Envio_Promedio'].map('${:,.2f}'.format)
+comparativa_canal_formato['Costo_Envio_Promedio'] = comparativa_canal_formato['Costo_Envio_Promedio'].apply(formato_moneda)
 
 print(f"\n{comparativa_canal_formato}\n") 
 
@@ -208,8 +215,8 @@ resumen_vendedores = df_entregado.groupby('Vendedor').agg(
 ).sort_values(by='Facturacion_Total', ascending=False)
 
 resumen_vendedores_formato = resumen_vendedores.copy()
-resumen_vendedores_formato['Facturacion_Total'] = resumen_vendedores_formato['Facturacion_Total'].map('${:,.2f}'.format)
-resumen_vendedores_formato['Ticket_Promedio'] = resumen_vendedores_formato['Ticket_Promedio'].map('${:,.2f}'.format)
+resumen_vendedores_formato['Facturacion_Total'] = resumen_vendedores_formato['Facturacion_Total'].apply(formato_moneda)
+resumen_vendedores_formato['Ticket_Promedio'] = resumen_vendedores_formato['Ticket_Promedio'].apply(formato_moneda)
 
 print("--- Desempeño General de Vendedores ---")
 print(f"\n{resumen_vendedores_formato.round(2)}\n")
@@ -230,25 +237,58 @@ resumen_categorias = df_entregado.groupby('Categoria').agg(
 ).sort_values(by='Facturacion_Total', ascending=False)
 
 resumen_categorias_formato = resumen_categorias.copy()
-resumen_categorias_formato['Facturacion_Total'] = resumen_categorias_formato['Facturacion_Total'].map('${:,.2f}'.format)
-resumen_categorias_formato['Precio_Unitario_Promedio'] = resumen_categorias_formato['Precio_Unitario_Promedio'].map('${:,.2f}'.format)
+resumen_categorias_formato['Facturacion_Total'] = resumen_categorias_formato['Facturacion_Total'].apply(formato_moneda)
+resumen_categorias_formato['Precio_Unitario_Promedio'] = resumen_categorias_formato['Precio_Unitario_Promedio'].apply(formato_moneda)
 
 print("--- Rendimiento por Categoría (Unidades, Facturación y Precio Promedio) ---")
 print(resumen_categorias_formato.round(2))
+
+print("\n--- 1. CATEGORÍAS CON MAYOR CANTIDAD DE UNIDADES VENDIDAS ---")
+unidades_categoria = df_entregado.groupby("Categoria")["Cantidad"].sum()
+print(unidades_categoria.sort_values(ascending=False))
+
+print("\n--- 2. CATEGORÍAS CON MAYOR FACTURACIÓN ---")
+facturacion_categoria = df_entregado.groupby("Categoria")["Importe_venta"].sum().sort_values(ascending=False)
+facturacion_categoria_formato = facturacion_categoria.apply(formato_moneda)
+print(facturacion_categoria_formato)
+
+print("\n--- 3. PRODUCTOS MÁS FRECUENTES ---")
+productos_frecuentes = df_entregado.groupby("Producto").size().head(5)
+print(productos_frecuentes.sort_values(ascending=False))
+
+print("\n--- 4. MARCAS CON MAYOR PRESENCIA ---")
+marcas_presencia = df_entregado.groupby("Marca").size()
+print(marcas_presencia.sort_values(ascending=False))
+
+print("\n--- 5. DIFERENCIAS DE PRECIO ENTRE CATEGORÍAS ---")
+precio_categoria = df_entregado.groupby("Categoria")["Precio_Unitario"].agg(
+    Precio_Minimo='min',
+    Precio_Maximo='max',
+    Precio_Promedio='mean'
+).sort_values(by='Precio_Promedio', ascending=False)
+
+# 2. Creamos una copia para darle formato de pesos a las columnas numéricas
+precio_categoria_formato = precio_categoria.copy()
+
+precio_categoria_formato['Precio_Minimo'] = precio_categoria_formato['Precio_Minimo'].apply(formato_moneda)
+precio_categoria_formato['Precio_Maximo'] = precio_categoria_formato['Precio_Maximo'].apply(formato_moneda)
+precio_categoria_formato['Precio_Promedio'] = precio_categoria_formato['Precio_Promedio'].apply(formato_moneda)
+print(precio_categoria_formato)
 
 
 print('\n' + '='*72)
 print("--- 9. VISUALIZACIÓN DE DATOS ---")
 print('='*72)
 
-'Gráfico 1: El rendimiento de las Sucursales'
-'Tipo de gráfico:'
-'Dos subplots de barras verticales (uno a la izquierda de cantidad y otro a la derecha de facturación) con fondo negro.'
-'¿Qué intenta mostrar? '
-'El mapa geográfico del negocio. Muestra que la sucursal Centro es el motor de liquidez y captación de caja de la empresa, mientras que las demás sucursales se mantienen estables en cantidad de operaciones pero con menor recaudación.'
-
-# Activamos el fondo oscuro
+# Configuración inicial del estilo de los gráficos
 plt.style.use('dark_background')
+
+"""
+Gráfico 1: El rendimiento de las Sucursales
+Tipo de gráfico: Dos subplots de barras verticales (Cantidad izquierda vs. Facturación derecha).
+¿Qué intenta mostrar?: 
+El mapa geográfico del negocio. Muestra que la sucursal Centro es el motor de liquidez y captación de caja de la empresa, mientras que las demás sucursales se mantienen estables en cantidad de operaciones pero con menor recaudación.
+"""
 
 # Calculamos los totales solo para lo efectivamente entregado
 resumen_suc = df_entregado.groupby("Sucursal")[["Cantidad", "Importe_venta"]].sum()
@@ -271,14 +311,12 @@ plt.tight_layout()
 plt.show()
 
 
-'Gráfico 2: El desempeño de los Vendedores (El dolor del personal)'
-'Tipo de gráfico: Dos subplots de barras verticales (Cantidad de tickets vs. Facturación real).'
-'¿Qué intenta mostrar?'
-'El comportamiento de los empleados.'
-'Diego Fernández lidera la recaudación, mientras que Nicolás Díaz es un perfil de volumen que mueve muchas unidades físicas pero de menor valor.'
-
-# Activamos el fondo oscuro
-plt.style.use('dark_background')
+"""
+Gráfico 2: El desempeño de los Vendedores (El dolor del personal)
+Tipo de gráfico: Dos subplots de barras verticales (Cantidad de tickets vs. Facturación real).
+¿Qué intenta mostrar?: 
+El comportamiento de los empleados. Diego Fernández lidera la recaudación, mientras que Nicolás Díaz es un perfil de volumen que mueve muchas unidades físicas pero de menor valor.
+"""
 
 resumen_vend = df_entregado.groupby("Vendedor")[["Cantidad", "Importe_venta"]].sum()
 vendedores = resumen_vend.index
@@ -302,19 +340,17 @@ plt.tight_layout()
 plt.show()
 
 
-'Gráfico 3: La estrategia comercial por Canal (El dolor del cliente)'
-'Tipo de gráfico: Gráfico combinado de Boxplot + Stripplot (Nube de puntos sobre cajas transparentes).'
-'¿Qué intenta mostrar?'
-'Intentamos mostrar cómo la flexibilidad en los descuentos define el éxito de cada canal: '
-'el canal presencial es conservador y se estanca en el 10% de descuento, mientras que el canal online rompe ese techo, genera un 50% de sus ventas con descuentos de doble dígito (entre 10% y 20%) y amplía significativamente su volumen comercial."'
-
-# Activamos el fondo oscuro
-plt.style.use('dark_background')
+"""
+Gráfico 3: La estrategia comercial por Canal (El dolor del cliente)
+Tipo de gráfico: Gráfico combinado de Boxplot + Stripplot (Nube de puntos sobre cajas transparentes).
+¿Qué intenta mostrar?
+Cómo la flexibilidad en los descuentos define el éxito de cada canal. El canal presencial es conservador y se estanca en el 10% de descuento, mientras que el canal online rompe ese techo, genera un 50% de sus ventas con descuentos de doble dígito (entre 10% y 20%) y amplía significativamente su volumen comercial.
+"""
 
 plt.figure(figsize=(8, 6))
 
 sns.boxplot(
-    data=df, # Mantiene df general si deseas ver la política comercial histórica de descuentos
+    data=df,  # Mantiene df general si deseas ver la política comercial histórica de descuentos
     x='Canal',
     y='Descuento_Porc',
     palette='muted',
@@ -335,24 +371,23 @@ sns.stripplot(
 plt.title('Relación de Descuentos Aplicados según el Canal de Venta', fontsize=13, fontweight='bold', pad=15)
 plt.xlabel('Canal de Venta', fontsize=11)
 plt.ylabel('Porcentaje de Descuento (%)', fontsize=11)
-
 plt.gca().yaxis.set_major_formatter(plt.FuncFormatter(lambda x, loc: f"{int(x)}%"))
 
 plt.tight_layout()
 plt.show()
 
 
-'Gráfico 4: Dispersión de Precios de Venta por Categoría'
-'Tipo de gráfico: Gráfico de dispersión categórica (Stripplot) con dimensiones de Precio Unitario (Eje Y) y Unidades por Venta (Color/Hue).'
-'¿Qué intenta mostrar?'
-'La diferencia entre el volumen físico de ventas y el valor nominal de cada operación para entender qué mueve la caja bruta. Demuestra visualmente que "Heladeras" y "Televisores" registran los tickets individuales más elevados del negocio (alcanzando techos de entre $1.0 y $1.4 millones), consolidándose como los principales captadores de ingresos brutos por operación. En contraste, "Pequeños Electrodomésticos" compensa su bajo precio unitario mediante el volumen de unidades por ticket, siendo la única categoría que registra compras de 3 y 4 unidades juntas (puntos naranjas y amarillos) en el extremo inferior de precios.'
+"""
+Gráfico 4: Dispersión de Precios de Venta por Categoría
+Tipo de gráfico: Gráfico de dispersión categórica (Stripplot) con dimensiones de Precio Unitario (Eje Y) y Unidades por Venta (Color/Hue).
+¿Qué intenta mostrar?: 
+La diferencia entre el volumen físico de ventas y el valor nominal de cada operación para entender qué mueve la caja bruta. Demuestra visualmente que "Heladeras" y "Televisores" registran los tickets individuales más elevados del negocio (alcanzando techos de entre $1.0 y $1.4 millones), consolidándose como los principales captadores de ingresos brutos por operación. En contraste, "Pequeños Electrodomésticos" compensa su bajo precio unitario mediante el volumen de unidades por ticket, siendo la única categoría que registra compras de 3 y 4 unidades juntas (puntos naranjas y amarillos) en el extremo inferior de precios.
+"""
 
-
-plt.style.use('dark_background')
 plt.figure(figsize=(10, 6))
 
 sns.stripplot(
-    data=df_entregado, # Enfocado en productos entregados reales
+    data=df_entregado,  # Enfocado en productos entregados reales
     x='Categoria',
     y='Precio_Unitario',          
     hue='Cantidad',       
@@ -368,31 +403,36 @@ plt.ylabel('Precio Unitario ($)')
 plt.gca().yaxis.set_major_formatter(plt.FuncFormatter(lambda x, loc: f"${int(x):,}".replace(",", ".")))
 plt.xticks(rotation=15)
 plt.legend(title='Unidades por Venta', bbox_to_anchor=(1.05, 1), loc='upper left')
+
 plt.tight_layout()
 plt.show()
 
-'Guardamos el dataframe en un archivo csv'
+
+# Construimos la ruta de guardado dinámica para la misma carpeta del script
+ruta_guardado = os.path.join(carpeta_actual, "Preparado_Ventas_Electrodomésticos.csv")
 
 try:
     df.to_csv(
-        "Preparado_Ventas_Electrodomésticos.csv",
+        ruta_guardado,
         index=False,
-        encoding='utf-8-sig'
+        encoding='utf-8-sig',
+        sep=';'  # Opcional: Recomendado si tus profesores abren el CSV directo en Excel en español
     )
     print("\n" + "="*50)
     print("¡PROYECTO FINALIZADO Y GUARDADO CON ÉXITO!")
-    print("Se creó el archivo: 'Ventas_Electrodomésticos.csv'")
+    print(f"Se creó el archivo en: {ruta_guardado}")
     print("="*50)
 
 except PermissionError:
     # Si el archivo está abierto en Excel, avisa y DETIENE el programa
     print("\n" + "!"*50)
     print("⚠️ ERROR DE PERMISOS: No se pudo guardar el archivo.")
-    print("El archivo 'Ventas_Electrodomésticos.csv' está abierto en Excel.")
-    print("Por favor, cierralo y vuelve a ejecutar el script en VS Code.")
+    print("El archivo 'Preparado_Ventas_Electrodomésticos.csv' está abierto en Excel.")
+    print("Por favor, ciérralo y vuelve a ejecutar el script en VS Code.")
     print("!"*50 + "\n")
-    
     exit()
 
 except Exception as e:
     print(f"\nOcurrió un error inesperado al guardar: {e}")
+
+
