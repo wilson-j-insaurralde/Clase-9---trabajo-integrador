@@ -1,37 +1,37 @@
-﻿ID_Venta,Fecha,Sucursal,Ciudad,Canal,Vendedor,Categoria,Producto,Marca,Cantidad,Precio_Unitario,Descuento_Porc,Medio_Pago,Tipo_Cliente,Costo_Envio,Estado_Venta,Calificacion,Total_bruto,Monto_Descuento,Importe_venta
-V001,2026-08-01,Centro,CABA,Presencial,Lucía Gómez,Heladeras,Heladera 320L,FríoMax,1,780000,0.1,Tarjeta crédito,Particular,0,Entregada,5.0,780000,78000,702000
-V002,2026-08-01,Norte,San Isidro,Online,Martín López,Televisores,Smart TV 50,Visión,1,620000,0.05,Tarjeta crédito,Particular,18000,Entregada,4.0,620000,31000,607000
-V003,2026-08-02,Oeste,Morón,Presencial,Carla Ruiz,Pequeños electro,Microondas 28L,HogarPlus,2,185000,0.0,Débito,Particular,0,Entregada,4.0,370000,0,370000
-V004,2026-08-02,Centro,CABA,Online,Diego Fernández,Lavarropas,Lavarropas 8kg,AquaWash,1,690000,0.12,Transferencia,Particular,22000,Entregada,5.0,690000,82800,629200
-V005,2026-08-03,Sur,Quilmes,Presencial,Sofía Pérez,Climatización,Aire acondicionado 3000F,ClimaAR,1,540000,0.08,Tarjeta crédito,Particular,0,Entregada,4.0,540000,43200,496800
-V006,2026-08-03,Norte,San Isidro,Online,Martín López,Pequeños electro,Cafetera automática,CaféHome,1,245000,0.15,Mercado Pago,Particular,12000,Entregada,5.0,245000,36750,220250
-V007,2026-08-04,Oeste,Morón,Presencial,Carla Ruiz,Televisores,Smart TV 43,Visión,1,445000,0.05,Efectivo,Particular,0,Entregada,4.0,445000,22250,422750
-V008,2026-08-04,Centro,CABA,Online,Diego Fernández,Heladeras,Heladera No Frost 400L,FríoMax,1,980000,0.1,Tarjeta crédito,Empresa,25000,Entregada,5.0,980000,98000,907000
-V009,2026-08-05,Sur,Quilmes,Online,Nicolás Díaz,Lavarropas,Lavarropas 6kg,AquaWash,1,510000,0.07,Transferencia,Particular,18000,Entregada,3.0,510000,35700,492300
-V010,2026-08-05,Norte,San Isidro,Presencial,Valentina Soto,Pequeños electro,Licuadora 700W,HogarPlus,3,89000,0.0,Débito,Particular,0,Entregada,4.0,267000,0,267000
-V011,2026-08-06,Centro,CABA,Presencial,Lucía Gómez,Cocina,Cocina 4 hornallas,Cocinarte,1,470000,0.06,Tarjeta crédito,Particular,0,Entregada,5.0,470000,28200,441800
-V012,2026-08-06,Oeste,Morón,Online,Federico Ríos,Televisores,Smart TV 65,Visión,1,890000,0.18,Tarjeta crédito,Empresa,28000,Entregada,4.0,890000,160200,757800
-V013,2026-08-07,Sur,Quilmes,Presencial,Sofía Pérez,Pequeños electro,Aspiradora 1800W,CleanPro,1,160000,0.05,Efectivo,Particular,0,Entregada,4.0,160000,8000,152000
-V014,2026-08-07,Norte,San Isidro,Online,Martín López,Climatización,Caloventor 2000W,ClimaAR,2,78000,0.1,Mercado Pago,Particular,9000,Entregada,5.0,156000,15600,149400
-V015,2026-08-08,Centro,CABA,Online,Diego Fernández,Cocina,Anafe eléctrico,Cocinarte,1,210000,0.0,Transferencia,Particular,11000,Entregada,4.0,210000,0,221000
-V016,2026-08-08,Oeste,Morón,Presencial,Carla Ruiz,Heladeras,Freezer 300L,FríoMax,1,720000,0.04,Tarjeta crédito,Comercio,0,Entregada,4.0,720000,28800,691200
-V017,2026-08-09,Sur,Quilmes,Online,Nicolás Díaz,Pequeños electro,Pava eléctrica,HogarPlus,4,52000,0.0,Mercado Pago,Particular,8000,Entregada,5.0,208000,0,216000
-V018,2026-08-09,Norte,San Isidro,Presencial,Valentina Soto,Lavarropas,Secarropas centrífugo,AquaWash,1,230000,0.06,Débito,Particular,0,Entregada,3.0,230000,13800,216200
-V019,2026-08-10,Centro,CABA,Online,Lucía Gómez,Televisores,Smart TV 55,Visión,2,710000,0.12,Tarjeta crédito,Empresa,26000,Entregada,5.0,1420000,170400,1275600
-V020,2026-08-10,Oeste,Morón,Online,Federico Ríos,Pequeños electro,Tostadora,HogarPlus,2,69000,0.05,Mercado Pago,Particular,7000,Cancelada,,138000,6900,138100
-V021,2026-08-11,Sur,Quilmes,Presencial,Sofía Pérez,Cocina,Horno eléctrico 45L,Cocinarte,1,260000,0.08,Efectivo,Particular,0,Entregada,4.0,260000,20800,239200
-V022,2026-08-11,Norte,San Isidro,Online,Martín López,Heladeras,Heladera 280L,FríoMax,1,650000,0.1,Transferencia,Particular,20000,Entregada,4.0,650000,65000,605000
-V023,2026-08-12,Centro,CABA,Presencial,Lucía Gómez,Pequeños electro,Batidora planetaria,CaféHome,1,195000,0.03,Débito,Particular,0,Entregada,5.0,195000,5850,189150
-V024,2026-08-12,Oeste,Morón,Online,Federico Ríos,Climatización,Aire acondicionado 4500F,ClimaAR,1,740000,0.15,Tarjeta crédito,Empresa,30000,Pendiente,,740000,111000,659000
-V025,2026-08-13,Sur,Quilmes,Online,Nicolás Díaz,Televisores,Smart TV 32,Visión,1,290000,0.05,Mercado Pago,Particular,14000,Entregada,4.0,290000,14500,289500
-V026,2026-08-13,Norte,San Isidro,Presencial,Valentina Soto,Cocina,Campana extractora,Cocinarte,1,175000,0.0,Efectivo,Particular,0,Entregada,4.0,175000,0,175000
-V027,2026-08-14,Centro,CABA,Online,Diego Fernández,Lavarropas,Lavarropas 10kg,AquaWash,1,890000,0.1,Tarjeta crédito,Particular,24000,Entregada,5.0,890000,89000,825000
-V028,2026-08-14,Oeste,Morón,Presencial,Carla Ruiz,Pequeños electro,Procesadora,HogarPlus,1,145000,0.05,Débito,Particular,0,Entregada,4.0,145000,7250,137750
-V029,2026-08-15,Sur,Quilmes,Online,Nicolás Díaz,Heladeras,Heladera Side by Side,FríoMax,1,1450000,0.2,Transferencia,Empresa,38000,Entregada,5.0,1450000,290000,1198000
-V030,2026-08-15,Norte,San Isidro,Presencial,Valentina Soto,Televisores,Smart TV 50,Visión,1,620000,0.07,Tarjeta crédito,Particular,0,Entregada,4.0,620000,43400,576600
-V031,2026-08-16,Centro,CABA,Presencial,Lucía Gómez,Climatización,Ventilador de pie,ClimaAR,2,95000,0.0,Efectivo,Particular,0,Entregada,4.0,190000,0,190000
-V032,2026-08-16,Oeste,Morón,Online,Federico Ríos,Cocina,Cocina 5 hornallas,Cocinarte,1,610000,0.11,,Particular,23000,Entregada,3.0,610000,67100,565900
-V033,2026-08-17,Sur,Quilmes,Presencial,Sofía Pérez,Lavarropas,Lavarropas 8kg,AquaWash,1,690000,0.05,Tarjeta crédito,Particular,0,Entregada,4.0,690000,34500,655500
-V034,2026-08-17,Norte,San Isidro,Online,Martín López,Pequeños electro,Freidora de aire,HogarPlus,2,135000,0.1,Mercado Pago,Particular,10000,Entregada,5.0,270000,27000,253000
-V035,2026-08-18,Centro,CABA,Online,Diego Fernández,Televisores,Smart TV 75,Visión,1,1350000,0.15,Tarjeta crédito,Empresa,35000,Entregada,5.0,1350000,202500,1182500
-V036,2026-08-18,Sur,Quilmes,Online,Nicolás Díaz,Pequeños electro,Cafetera automática,CaféHome,1,245000,0.05,Transferencia,Particular,12000,Entregada,4.0,245000,12250,244750
+﻿ID_Venta;Fecha;Sucursal;Ciudad;Canal;Vendedor;Categoria;Producto;Marca;Cantidad;Precio_Unitario;Descuento_Porc;Medio_Pago;Tipo_Cliente;Costo_Envio;Estado_Venta;Calificacion;Subtotal;Monto_Descuento;Total_Venta
+V001;2026-08-01;Centro;CABA;Presencial;Lucía Gómez;Heladeras;Heladera 320L;FríoMax;1;780000;0.1;Tarjeta crédito;Particular;0;Entregada;5.0;780000;78000;702000
+V002;2026-08-01;Norte;San Isidro;Online;Martín López;Televisores;Smart TV 50;Visión;1;620000;0.05;Tarjeta crédito;Particular;18000;Entregada;4.0;620000;31000;607000
+V003;2026-08-02;Oeste;Morón;Presencial;Carla Ruiz;Pequeños electro;Microondas 28L;HogarPlus;2;185000;0.0;Débito;Particular;0;Entregada;4.0;370000;0;370000
+V004;2026-08-02;Centro;CABA;Online;Diego Fernández;Lavarropas;Lavarropas 8kg;AquaWash;1;690000;0.12;Transferencia;Particular;22000;Entregada;5.0;690000;82800;629200
+V005;2026-08-03;Sur;Quilmes;Presencial;Sofía Pérez;Climatización;Aire acondicionado 3000F;ClimaAR;1;540000;0.08;Tarjeta crédito;Particular;0;Entregada;4.0;540000;43200;496800
+V006;2026-08-03;Norte;San Isidro;Online;Martín López;Pequeños electro;Cafetera automática;CaféHome;1;245000;0.15;Mercado Pago;Particular;12000;Entregada;5.0;245000;36750;220250
+V007;2026-08-04;Oeste;Morón;Presencial;Carla Ruiz;Televisores;Smart TV 43;Visión;1;445000;0.05;Efectivo;Particular;0;Entregada;4.0;445000;22250;422750
+V008;2026-08-04;Centro;CABA;Online;Diego Fernández;Heladeras;Heladera No Frost 400L;FríoMax;1;980000;0.1;Tarjeta crédito;Empresa;25000;Entregada;5.0;980000;98000;907000
+V009;2026-08-05;Sur;Quilmes;Online;Nicolás Díaz;Lavarropas;Lavarropas 6kg;AquaWash;1;510000;0.07;Transferencia;Particular;18000;Entregada;3.0;510000;35700;492300
+V010;2026-08-05;Norte;San Isidro;Presencial;Valentina Soto;Pequeños electro;Licuadora 700W;HogarPlus;3;89000;0.0;Débito;Particular;0;Entregada;4.0;267000;0;267000
+V011;2026-08-06;Centro;CABA;Presencial;Lucía Gómez;Cocina;Cocina 4 hornallas;Cocinarte;1;470000;0.06;Tarjeta crédito;Particular;0;Entregada;5.0;470000;28200;441800
+V012;2026-08-06;Oeste;Morón;Online;Federico Ríos;Televisores;Smart TV 65;Visión;1;890000;0.18;Tarjeta crédito;Empresa;28000;Entregada;4.0;890000;160200;757800
+V013;2026-08-07;Sur;Quilmes;Presencial;Sofía Pérez;Pequeños electro;Aspiradora 1800W;CleanPro;1;160000;0.05;Efectivo;Particular;0;Entregada;4.0;160000;8000;152000
+V014;2026-08-07;Norte;San Isidro;Online;Martín López;Climatización;Caloventor 2000W;ClimaAR;2;78000;0.1;Mercado Pago;Particular;9000;Entregada;5.0;156000;15600;149400
+V015;2026-08-08;Centro;CABA;Online;Diego Fernández;Cocina;Anafe eléctrico;Cocinarte;1;210000;0.0;Transferencia;Particular;11000;Entregada;4.0;210000;0;221000
+V016;2026-08-08;Oeste;Morón;Presencial;Carla Ruiz;Heladeras;Freezer 300L;FríoMax;1;720000;0.04;Tarjeta crédito;Comercio;0;Entregada;4.0;720000;28800;691200
+V017;2026-08-09;Sur;Quilmes;Online;Nicolás Díaz;Pequeños electro;Pava eléctrica;HogarPlus;4;52000;0.0;Mercado Pago;Particular;8000;Entregada;5.0;208000;0;216000
+V018;2026-08-09;Norte;San Isidro;Presencial;Valentina Soto;Lavarropas;Secarropas centrífugo;AquaWash;1;230000;0.06;Débito;Particular;0;Entregada;3.0;230000;13800;216200
+V019;2026-08-10;Centro;CABA;Online;Lucía Gómez;Televisores;Smart TV 55;Visión;2;710000;0.12;Tarjeta crédito;Empresa;26000;Entregada;5.0;1420000;170400;1275600
+V020;2026-08-10;Oeste;Morón;Online;Federico Ríos;Pequeños electro;Tostadora;HogarPlus;2;69000;0.05;Mercado Pago;Particular;7000;Cancelada;;138000;6900;138100
+V021;2026-08-11;Sur;Quilmes;Presencial;Sofía Pérez;Cocina;Horno eléctrico 45L;Cocinarte;1;260000;0.08;Efectivo;Particular;0;Entregada;4.0;260000;20800;239200
+V022;2026-08-11;Norte;San Isidro;Online;Martín López;Heladeras;Heladera 280L;FríoMax;1;650000;0.1;Transferencia;Particular;20000;Entregada;4.0;650000;65000;605000
+V023;2026-08-12;Centro;CABA;Presencial;Lucía Gómez;Pequeños electro;Batidora planetaria;CaféHome;1;195000;0.03;Débito;Particular;0;Entregada;5.0;195000;5850;189150
+V024;2026-08-12;Oeste;Morón;Online;Federico Ríos;Climatización;Aire acondicionado 4500F;ClimaAR;1;740000;0.15;Tarjeta crédito;Empresa;30000;Pendiente;;740000;111000;659000
+V025;2026-08-13;Sur;Quilmes;Online;Nicolás Díaz;Televisores;Smart TV 32;Visión;1;290000;0.05;Mercado Pago;Particular;14000;Entregada;4.0;290000;14500;289500
+V026;2026-08-13;Norte;San Isidro;Presencial;Valentina Soto;Cocina;Campana extractora;Cocinarte;1;175000;0.0;Efectivo;Particular;0;Entregada;4.0;175000;0;175000
+V027;2026-08-14;Centro;CABA;Online;Diego Fernández;Lavarropas;Lavarropas 10kg;AquaWash;1;890000;0.1;Tarjeta crédito;Particular;24000;Entregada;5.0;890000;89000;825000
+V028;2026-08-14;Oeste;Morón;Presencial;Carla Ruiz;Pequeños electro;Procesadora;HogarPlus;1;145000;0.05;Débito;Particular;0;Entregada;4.0;145000;7250;137750
+V029;2026-08-15;Sur;Quilmes;Online;Nicolás Díaz;Heladeras;Heladera Side by Side;FríoMax;1;1450000;0.2;Transferencia;Empresa;38000;Entregada;5.0;1450000;290000;1198000
+V030;2026-08-15;Norte;San Isidro;Presencial;Valentina Soto;Televisores;Smart TV 50;Visión;1;620000;0.07;Tarjeta crédito;Particular;0;Entregada;4.0;620000;43400;576600
+V031;2026-08-16;Centro;CABA;Presencial;Lucía Gómez;Climatización;Ventilador de pie;ClimaAR;2;95000;0.0;Efectivo;Particular;0;Entregada;4.0;190000;0;190000
+V032;2026-08-16;Oeste;Morón;Online;Federico Ríos;Cocina;Cocina 5 hornallas;Cocinarte;1;610000;0.11;No especificado;Particular;23000;Entregada;3.0;610000;67100;565900
+V033;2026-08-17;Sur;Quilmes;Presencial;Sofía Pérez;Lavarropas;Lavarropas 8kg;AquaWash;1;690000;0.05;Tarjeta crédito;Particular;0;Entregada;4.0;690000;34500;655500
+V034;2026-08-17;Norte;San Isidro;Online;Martín López;Pequeños electro;Freidora de aire;HogarPlus;2;135000;0.1;Mercado Pago;Particular;10000;Entregada;5.0;270000;27000;253000
+V035;2026-08-18;Centro;CABA;Online;Diego Fernández;Televisores;Smart TV 75;Visión;1;1350000;0.15;Tarjeta crédito;Empresa;35000;Entregada;5.0;1350000;202500;1182500
+V036;2026-08-18;Sur;Quilmes;Online;Nicolás Díaz;Pequeños electro;Cafetera automática;CaféHome;1;245000;0.05;Transferencia;Particular;12000;Entregada;4.0;245000;12250;244750
